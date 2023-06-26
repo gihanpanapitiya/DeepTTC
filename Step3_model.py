@@ -89,8 +89,8 @@ class transformer(nn.Sequential):
         return encoded_layers[:, 0]
 
 class MLP(nn.Sequential):
-    def __init__(self):
-        input_dim_gene = 17737
+    def __init__(self, input_dim_gene):
+        input_dim_gene = input_dim_gene
         hidden_dim_gene = 256
         mlp_hidden_dims_gene = [1024, 256, 64]
         super(MLP, self).__init__()
@@ -133,12 +133,13 @@ class Classifier(nn.Sequential):
 
 
 class DeepTTC:
-    def __init__(self,modeldir):
+    def __init__(self,modeldir, input_dim_gene):
         model_drug = transformer()
-        model_gene = MLP()
+        model_gene = MLP(input_dim_gene)
         self.model = Classifier(model_drug,model_gene)
         self.device = torch.device('cuda:0')
         self.modeldir = modeldir
+        
         self.record_file = os.path.join(self.modeldir, "valid_markdowntable.txt")
         self.pkl_file = os.path.join(self.modeldir, "loss_curve_iter.pkl")
 
@@ -168,11 +169,11 @@ class DeepTTC:
                concordance_index(y_label, y_pred), \
                loss
 
-    def train(self, train_drug, train_rna, val_drug, val_rna):
+    def train(self, train_drug, train_rna, val_drug, val_rna, train_epoch=3):
         lr = 1e-4
         decay = 0
         BATCH_SIZE = 64
-        train_epoch = 3
+        # train_epoch = 3
         self.model = self.model.to(self.device)
         # self.model = torch.nn.DataParallel(self.model, device_ids=[0, 5])
         opt = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=decay)
@@ -237,6 +238,7 @@ class DeepTTC:
                 valid_metric_record.append(lst)
                 if mse < max_MSE:
                     model_max = copy.deepcopy(self.model)
+                    self.save_model()
                     max_MSE = mse
                     print('Validation at Epoch ' + str(epo + 1) +
                           ' with loss:' + str(loss_val.item())[:7] +
@@ -307,31 +309,31 @@ class DeepTTC:
         self.model.load_state_dict(state_dict)
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    # step1 数据切分
-    from Step2_DataEncoding import DataEncoding
-    vocab_dir = '/home/jlk/Project/023_CancerTrans/DeepTTC'
-    obj = DataEncoding(vocab_dir=vocab_dir)
+#     # step1 数据切分
+#     from Step2_DataEncoding import DataEncoding
+#     vocab_dir = '/home/jlk/Project/023_CancerTrans/DeepTTC'
+#     obj = DataEncoding(vocab_dir=vocab_dir)
 
-    # 切分完成
-    traindata, testdata = obj.Getdata.ByCancer(random_seed=1)
-    # encoding 完成
-    traindata, train_rnadata, testdata, test_rnadata = obj.encode(
-        traindata=traindata,
-        testdata=testdata)
+#     # 切分完成
+#     traindata, testdata = obj.Getdata.ByCancer(random_seed=1)
+#     # encoding 完成
+#     traindata, train_rnadata, testdata, test_rnadata = obj.encode(
+#         traindata=traindata,
+#         testdata=testdata)
 
-    # step2：构造模型
-    modeldir = '/home/jlk/Project/023_CancerTrans/DeepTTC/Model_80'
-    modelfile = modeldir + '/model.pt'
-    if not os.path.exists(modeldir):
-        os.mkdir(modeldir)
+#     # step2：构造模型
+#     modeldir = '/home/jlk/Project/023_CancerTrans/DeepTTC/Model_80'
+#     modelfile = modeldir + '/model.pt'
+#     if not os.path.exists(modeldir):
+#         os.mkdir(modeldir)
 
-    net = DeepTTC(modeldir=modeldir)
-    net.train(train_drug=traindata, train_rna=train_rnadata,
-              val_drug=testdata, val_rna=test_rnadata)
-    net.save_model()
-    print("Model Saveed :{}".format(modelfile))
+#     net = DeepTTC(modeldir=modeldir)
+#     net.train(train_drug=traindata, train_rna=train_rnadata,
+#               val_drug=testdata, val_rna=test_rnadata)
+#     net.save_model()
+#     print("Model Saveed :{}".format(modelfile))
 
 
 
