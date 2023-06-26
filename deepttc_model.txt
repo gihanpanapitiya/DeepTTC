@@ -1,0 +1,15 @@
+[Global_Params]
+model_name='DeepTTC'
+cuda_name = "cuda:0"
+batch_size=64
+lr=0.001
+epochs=1
+output_dir = 'Output'
+download_data = False
+data_source = 'ccle_candle'
+#data_source = 'gsci_candle'
+data_split_seed=-1
+data_split_id=0
+metric='ic50'
+#data_version='benchmark-data-pilot1'
+data_version='benchmark-data-imp-2023'
