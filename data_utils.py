@@ -2,7 +2,7 @@ import os
 from typing import Union, List
 import urllib
 import pandas as pd
-from rdkit import Chem
+# from rdkit import Chem
 #------------------
 # 1. download data
 #------------------
@@ -382,29 +382,29 @@ def set_col_names_in_multilevel_dataframe(
     return df
 
 
-def remove_smiles_with_noneighbor_frags(smiles_df):
+# def remove_smiles_with_noneighbor_frags(smiles_df):
 
-    remove_smiles=[]
-    for i in smiles_df.index:
-        smiles = smiles_df.loc[i, 'smiles']
-        has_atoms_wothout_neighbors = check_for_atoms_without_neighbors(smiles)
-        if has_atoms_wothout_neighbors:
-            remove_smiles.append(smiles)
+#     remove_smiles=[]
+#     for i in smiles_df.index:
+#         smiles = smiles_df.loc[i, 'smiles']
+#         has_atoms_wothout_neighbors = check_for_atoms_without_neighbors(smiles)
+#         if has_atoms_wothout_neighbors:
+#             remove_smiles.append(smiles)
 
-    smiles_df = smiles_df[~smiles_df.smiles.isin(remove_smiles)]
-    smiles_df.dropna(inplace=True)
-    smiles_df.reset_index(drop=True, inplace=True)
+#     smiles_df = smiles_df[~smiles_df.smiles.isin(remove_smiles)]
+#     smiles_df.dropna(inplace=True)
+#     smiles_df.reset_index(drop=True, inplace=True)
 
-    return smiles_df    
+#     return smiles_df    
 
-def check_for_atoms_without_neighbors(smiles):
+# def check_for_atoms_without_neighbors(smiles):
 
-    mol = Chem.AddHs(Chem.MolFromSmiles(smiles))
-    frags = Chem.GetMolFrags(mol, asMols=True)
-    frag_atoms = [i.GetNumAtoms() for i in frags]
-    has_atoms_wothout_neighbors = any([i==1 for i in frag_atoms])
+#     mol = Chem.AddHs(Chem.MolFromSmiles(smiles))
+#     frags = Chem.GetMolFrags(mol, asMols=True)
+#     frag_atoms = [i.GetNumAtoms() for i in frags]
+#     has_atoms_wothout_neighbors = any([i==1 for i in frag_atoms])
 
     
-    return has_atoms_wothout_neighbors
+#     return has_atoms_wothout_neighbors
 
         
