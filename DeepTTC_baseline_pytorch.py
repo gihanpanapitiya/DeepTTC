@@ -164,8 +164,8 @@ def run(params):
 
     if data_split_seed> -1: # randomly shuffle data
         all_df = pd.concat([train, val, test])
-        train, val = train_test_split(all_id, test_size=0.2, random_state=data_split_seed)
-        test, val = train_test_split(val_id, test_size=0.5, random_state=data_split_seed)
+        train, val = train_test_split(all_df, test_size=0.2, random_state=data_split_seed)
+        test, val = train_test_split(val, test_size=0.5, random_state=data_split_seed)
         train.reset_index(drop=True, inplace=True)
         test.reset_index(drop=True, inplace=True)
         val.reset_index(drop=True, inplace=True)
