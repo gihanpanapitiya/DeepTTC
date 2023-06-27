@@ -11,6 +11,7 @@ from download_model_data import download_model_specific_data
 # from data_utils import load_landmark_genes
 from Step3_model import DeepTTC
 import torch
+from sklearn.model_selection import train_test_split
 
 
 file_path = os.path.dirname(os.path.realpath(__file__))
